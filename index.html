@@ -6,6 +6,7 @@
   <title>Diagnóstico Cervecero · Podium Beer</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <style>
+    /* ===== ESTILOS (sin cambios) ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: 'Inter', sans-serif;
@@ -80,7 +81,6 @@
       border: 1px solid rgba(255,255,255,0.15);
       line-height: 1.4;
     }
-    /* Tarjetas glass */
     .glass-card {
       background: rgba(6,35,46,0.35);
       backdrop-filter: blur(20px);
@@ -199,7 +199,6 @@
       min-height: 1.8rem;
       font-weight: 500;
     }
-    /* Responsive */
     @media (max-width: 600px) {
       .glass-card { padding: 1.5rem 1rem; }
       .question-text { font-size: 1.2rem; }
@@ -214,7 +213,8 @@
 
   <div class="app-container">
     <div class="header">
-      <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="logo-header">
+      <!-- ✅ LOGO CORREGIDO: usa Logo_Desde.png -->
+      <img src="assets/Logo_Desde.png" alt="Podium Beer" class="logo-header">
       <h1>Diagnóstico Estratégico</h1>
       <div class="subhead">Conocé el perfil real de tu cervecería</div>
       <div class="description">
@@ -238,12 +238,9 @@
     (function(){
       "use strict";
 
-      // ---------- DEFINICIÓN DE PREGUNTAS (según requerimiento) ----------
       const questionsData = [
         {
-          id: 'q1',
-          emoji: '💸',
-          text: '¿Cómo decides qué cerveza producir?',
+          id: 'q1', emoji: '💸', text: '¿Cómo decides qué cerveza producir?',
           options: [
             { value: 'intuicion', label: 'Intuición / experiencia', desc: '“lo que tú crees que puede funcionar”' },
             { value: 'tendencias', label: 'Tendencias de mercado', desc: '“lo que ves que está de moda o se está haciendo más”' },
@@ -252,9 +249,7 @@
           ]
         },
         {
-          id: 'q2',
-          emoji: '💸',
-          text: '¿Qué pesa más al tomar decisiones?',
+          id: 'q2', emoji: '💸', text: '¿Qué pesa más al tomar decisiones?',
           options: [
             { value: 'margen', label: 'Margen', desc: '“ganar más plata por cada cerveza”' },
             { value: 'rotacion', label: 'Rotación', desc: '“vender más volumen aunque ganes menos por unidad”' },
@@ -263,9 +258,7 @@
           ]
         },
         {
-          id: 'q3',
-          emoji: '🍺',
-          text: '¿Cómo defines tu línea de cervezas?',
+          id: 'q3', emoji: '🍺', text: '¿Cómo defines tu línea de cervezas?',
           options: [
             { value: 'creatividad', label: 'Creatividad personal', desc: '“hacer lo que te gusta o te interesa como cervecero”' },
             { value: 'reaccion_mercado', label: 'Reacción al mercado', desc: '“adaptarte a lo que ves que se vende o funciona”' },
@@ -274,9 +267,7 @@
           ]
         },
         {
-          id: 'q4',
-          emoji: '🍺',
-          text: '¿Sigues tendencias o haces lo que te gusta?',
+          id: 'q4', emoji: '🍺', text: '¿Sigues tendencias o haces lo que te gusta?',
           options: [
             { value: 'gusto_personal', label: '100% gusto personal', desc: '“haces principalmente lo que te gusta a ti”' },
             { value: 'intuicion', label: 'Mayormente intuición', desc: '“decides según tu experiencia más que por datos”' },
@@ -285,9 +276,7 @@
           ]
         },
         {
-          id: 'q5',
-          emoji: '🏆',
-          text: '¿Por qué eliges los concursos?',
+          id: 'q5', emoji: '🏆', text: '¿Por qué eliges los concursos?',
           options: [
             { value: 'prestigio', label: 'Prestigio del concurso', desc: '“porque es reconocido o tiene buen nombre”' },
             { value: 'costo', label: 'Costo', desc: '“porque es más accesible económicamente”' },
@@ -296,9 +285,7 @@
           ]
         },
         {
-          id: 'q6',
-          emoji: '🏆',
-          text: '¿Cómo eliges qué cerveza enviar?',
+          id: 'q6', emoji: '🏆', text: '¿Cómo eliges qué cerveza enviar?',
           options: [
             { value: 'mejor', label: 'La que crees mejor', desc: '“la que tú consideras de mejor calidad”' },
             { value: 'mas_vendida', label: 'La más vendida', desc: '“la que más se vende en tu cervecería”' },
@@ -307,9 +294,7 @@
           ]
         },
         {
-          id: 'q7',
-          emoji: '🏆',
-          text: '¿Con qué frecuencia participas?',
+          id: 'q7', emoji: '🏆', text: '¿Con qué frecuencia participas?',
           options: [
             { value: '1_vez', label: '1 vez al año', desc: '“participas ocasionalmente”' },
             { value: '2_3_veces', label: '2–3 veces al año', desc: '“participación moderada”' },
@@ -318,9 +303,7 @@
           ]
         },
         {
-          id: 'q8',
-          emoji: '🥇',
-          text: '¿Las medallas te han generado ventas?',
+          id: 'q8', emoji: '🥇', text: '¿Las medallas te han generado ventas?',
           options: [
             { value: 'si_claramente', label: 'Sí, claramente', desc: '“notaste un aumento real en ventas”' },
             { value: 'algo', label: 'Algo', desc: '“sí ayudan, pero no mucho”' },
@@ -329,9 +312,7 @@
           ]
         },
         {
-          id: 'q9',
-          emoji: '🥇',
-          text: '¿Usas las medallas en tu comunicación?',
+          id: 'q9', emoji: '🥇', text: '¿Usas las medallas en tu comunicación?',
           options: [
             { value: 'siempre', label: 'Siempre', desc: '“las usas activamente en redes, etiquetas o ventas”' },
             { value: 'a_veces', label: 'A veces', desc: '“las mencionas, pero no de forma constante”' },
@@ -340,9 +321,7 @@
           ]
         },
         {
-          id: 'q10',
-          emoji: '📊',
-          text: '¿Para ti los concursos valen la pena?',
+          id: 'q10', emoji: '📊', text: '¿Para ti los concursos valen la pena?',
           options: [
             { value: 'si_totalmente', label: 'Sí, totalmente', desc: '“crees que son una buena inversión”' },
             { value: 'depende', label: 'Depende', desc: '“a veces sí, a veces no”' },
@@ -351,9 +330,7 @@
           ]
         },
         {
-          id: 'q11',
-          emoji: '📊',
-          text: '¿Qué te frena para participar más?',
+          id: 'q11', emoji: '📊', text: '¿Qué te frena para participar más?',
           options: [
             { value: 'costo', label: 'Costo', desc: '“es caro participar”' },
             { value: 'tiempo', label: 'Tiempo / gestión', desc: '“requiere mucho esfuerzo o coordinación”' },
@@ -362,9 +339,7 @@
           ]
         },
         {
-          id: 'q12',
-          emoji: '🧠',
-          text: '¿Sabes tu posición en el mercado?',
+          id: 'q12', emoji: '🧠', text: '¿Sabes tu posición en el mercado?',
           options: [
             { value: 'si_claramente', label: 'Sí, claramente', desc: '“tienes claro en qué nivel estás”' },
             { value: 'mas_o_menos', label: 'Más o menos', desc: '“tienes una idea general”' },
@@ -373,9 +348,7 @@
           ]
         },
         {
-          id: 'q13',
-          emoji: '🌍',
-          text: '¿Cómo ves el futuro del mercado?',
+          id: 'q13', emoji: '🌍', text: '¿Cómo ves el futuro del mercado?',
           options: [
             { value: 'muy_optimista', label: 'Muy optimista', desc: '“ves muchas oportunidades”' },
             { value: 'moderado', label: 'Moderado', desc: '“crees que habrá crecimiento, pero con desafíos”' },
@@ -390,7 +363,6 @@
       const clearBtn = document.getElementById('clearAllBtn');
       const statusEl = document.getElementById('exportStatus');
 
-      // Renderizar preguntas
       function renderQuestions() {
         let html = '';
         questionsData.forEach((q, index) => {
@@ -417,13 +389,11 @@
         container.innerHTML = html;
       }
 
-      // Obtener respuestas seleccionadas (objeto con arrays)
       function collectAnswers() {
         const results = [];
         questionsData.forEach(q => {
           const checkboxes = document.querySelectorAll(`input[name="${q.id}"]:checked`);
           const selectedValues = Array.from(checkboxes).map(cb => {
-            // Buscar el label asociado para mostrar texto legible
             const label = document.querySelector(`label[for="${cb.id}"]`);
             const mainText = label ? label.childNodes[0].nodeValue.trim() : cb.value;
             return mainText;
@@ -438,19 +408,15 @@
         return results;
       }
 
-      // Exportar a CSV
       function exportToCsv() {
         const answers = collectAnswers();
-        
-        // Construir filas: cabecera "Pregunta", "Respuestas seleccionadas"
         let csvRows = [];
         csvRows.push(['Pregunta', 'Respuestas seleccionadas'].join(','));
 
         answers.forEach(item => {
-          const questionText = item.question.replace(/,/g, ';'); // evitar comas
+          const questionText = item.question.replace(/,/g, ';');
           let answersStr = item.selected.join('; ');
           if (answersStr === '') answersStr = '(Sin respuesta)';
-          // Escapar comillas si es necesario
           const row = [
             `"${questionText}"`,
             `"${answersStr}"`
@@ -458,13 +424,12 @@
           csvRows.push(row.join(','));
         });
 
-        // Agregar metadata (fecha)
         const now = new Date();
         csvRows.push(['', '']);
         csvRows.push(['"Fecha de exportación"', `"${now.toLocaleString()}"`]);
 
         const csvString = csvRows.join('\n');
-        const blob = new Blob(['\uFEFF' + csvString], { type: 'text/csv;charset=utf-8;' }); // BOM para UTF-8
+        const blob = new Blob(['\uFEFF' + csvString], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -478,7 +443,6 @@
         setTimeout(() => { statusEl.textContent = ''; }, 3000);
       }
 
-      // Limpiar todas las selecciones
       function clearAllSelections() {
         const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
         allCheckboxes.forEach(cb => cb.checked = false);
@@ -486,13 +450,10 @@
         setTimeout(() => { statusEl.textContent = ''; }, 2000);
       }
 
-      // Inicializar eventos
       function init() {
         renderQuestions();
         exportBtn.addEventListener('click', exportToCsv);
         clearBtn.addEventListener('click', clearAllSelections);
-        
-        // Opcional: guardar en localStorage? No requerido.
       }
 
       init();
