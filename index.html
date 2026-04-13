@@ -50,10 +50,19 @@
     }
     .logo-header {
       display: block;
-      margin: 0 auto 1rem auto;
+      margin: 0 auto 0.5rem auto;
       width: 60%;
       max-width: 200px;
       height: auto;
+    }
+    .logo-bajada {
+      text-align: center;
+      color: #CFDEE0;
+      font-size: 0.9rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      margin-top: -0.3rem;
+      margin-bottom: 1rem;
     }
     /* Tarjetas glass */
     .glass-card {
@@ -129,6 +138,44 @@
       color: #CFDEE0;
       font-weight: 400;
       margin-top: 0.2rem;
+    }
+    /* Campo de nombre de cervecería */
+    .brewery-name-card {
+      background: rgba(6,35,46,0.35);
+      backdrop-filter: blur(20px);
+      border-radius: 2rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      padding: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .brewery-name-label {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .brewery-name-input {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      font-size: 1rem;
+      background: rgba(0,0,0,0.4);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 60px;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .brewery-name-input:focus {
+      border-color: #f7c32f;
+    }
+    .brewery-name-input::placeholder {
+      color: #9BB7C0;
+      opacity: 0.7;
     }
     .action-bar {
       display: flex;
@@ -207,6 +254,7 @@
       .question-text { font-size: 1.2rem; }
       .btn { padding: 10px 18px; min-width: 160px; }
       .social-icon { width: 30px; height: 30px; }
+      .brewery-name-label { font-size: 1rem; }
     }
   </style>
 </head>
@@ -218,6 +266,15 @@
   <div class="app-container">
     <div class="header">
       <img src="assets/Logo_Desde.png" alt="Podium Beer" class="logo-header">
+      <div class="logo-bajada">Catas Colaborativas · Cultura Cervecera</div>
+    </div>
+
+    <!-- Campo para nombre de cervecería -->
+    <div class="brewery-name-card">
+      <div class="brewery-name-label">
+        <span>🍺</span> Nombre de tu cervecería
+      </div>
+      <input type="text" id="breweryNameInput" class="brewery-name-input" placeholder="Ej: Cerveza Artesanal del Sur" autocomplete="off">
     </div>
 
     <div id="questionsContainer" class="questions-list" style="display: flex; flex-direction: column; gap: 1.8rem;"></div>
@@ -246,7 +303,7 @@
       Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015
     </div>
 
-    <!-- Botón de administrador (solo visible con ?admin) -->
+    <!-- Panel administrador (oculto por defecto) -->
     <div id="adminPanel" class="admin-download" style="display: none;">
       <button class="admin-btn" id="downloadAllDataBtn">📥 Descargar consolidado (Admin)</button>
     </div>
@@ -258,28 +315,134 @@
 
       const STORAGE_KEY = 'encuesta_respuestas';
 
+      // Preguntas completas (todas las opciones con descripción)
       const questionsData = [
-        { id: 'q1', emoji: '💸', text: '¿Cómo decides qué cerveza producir?', options: [ /* ... igual que antes ... */ ] },
-        { id: 'q2', emoji: '💸', text: '¿Qué pesa más al tomar decisiones?', options: [ /* ... */ ] },
-        { id: 'q3', emoji: '🍺', text: '¿Cómo defines tu línea de cervezas?', options: [ /* ... */ ] },
-        { id: 'q4', emoji: '🍺', text: '¿Sigues tendencias o haces lo que te gusta?', options: [ /* ... */ ] },
-        { id: 'q5', emoji: '🏆', text: '¿Por qué eliges los concursos?', options: [ /* ... */ ] },
-        { id: 'q6', emoji: '🏆', text: '¿Cómo eliges qué cerveza enviar?', options: [ /* ... */ ] },
-        { id: 'q7', emoji: '🏆', text: '¿Con qué frecuencia participas?', options: [ /* ... */ ] },
-        { id: 'q8', emoji: '🥇', text: '¿Las medallas te han generado ventas?', options: [ /* ... */ ] },
-        { id: 'q9', emoji: '🥇', text: '¿Usas las medallas en tu comunicación?', options: [ /* ... */ ] },
-        { id: 'q10', emoji: '📊', text: '¿Para ti los concursos valen la pena?', options: [ /* ... */ ] },
-        { id: 'q11', emoji: '📊', text: '¿Qué te frena para participar más?', options: [ /* ... */ ] },
-        { id: 'q12', emoji: '🧠', text: '¿Sabes tu posición en el mercado?', options: [ /* ... */ ] },
-        { id: 'q13', emoji: '🌍', text: '¿Cómo ves el futuro del mercado?', options: [ /* ... */ ] }
+        {
+          id: 'q1', emoji: '💸', text: '¿Cómo decides qué cerveza producir?',
+          options: [
+            { value: 'intuicion', label: 'Intuición / experiencia', desc: '“lo que tú crees que puede funcionar”' },
+            { value: 'tendencias', label: 'Tendencias de mercado', desc: '“lo que ves que está de moda o se está haciendo más”' },
+            { value: 'feedback', label: 'Feedback de clientes', desc: '“lo que te piden o te comentan tus clientes”' },
+            { value: 'datos_ventas', label: 'Datos de ventas', desc: '“lo que sabes que ya se vende bien en tu cervecería”' }
+          ]
+        },
+        {
+          id: 'q2', emoji: '💸', text: '¿Qué pesa más al tomar decisiones?',
+          options: [
+            { value: 'margen', label: 'Margen', desc: '“ganar más plata por cada cerveza”' },
+            { value: 'rotacion', label: 'Rotación', desc: '“vender más volumen aunque ganes menos por unidad”' },
+            { value: 'balance', label: 'Balance de ambos', desc: '“buscar equilibrio entre margen y volumen”' },
+            { value: 'no_claro', label: 'No lo tengo claro', desc: '“no lo tengo definido o depende del momento”' }
+          ]
+        },
+        {
+          id: 'q3', emoji: '🍺', text: '¿Cómo defines tu línea de cervezas?',
+          options: [
+            { value: 'creatividad', label: 'Creatividad personal', desc: '“hacer lo que te gusta o te interesa como cervecero”' },
+            { value: 'reaccion_mercado', label: 'Reacción al mercado', desc: '“adaptarte a lo que ves que se vende o funciona”' },
+            { value: 'mixta', label: 'Mixta', desc: '“mezcla entre lo que te gusta y lo que pide el mercado”' },
+            { value: 'no_definido', label: 'No definido', desc: '“no hay una estrategia clara”' }
+          ]
+        },
+        {
+          id: 'q4', emoji: '🍺', text: '¿Sigues tendencias o haces lo que te gusta?',
+          options: [
+            { value: 'gusto_personal', label: '100% gusto personal', desc: '“haces principalmente lo que te gusta a ti”' },
+            { value: 'intuicion', label: 'Mayormente intuición', desc: '“decides según tu experiencia más que por datos”' },
+            { value: 'mezcla_tendencias', label: 'Mezcla con tendencias', desc: '“consideras lo que se está moviendo en el mercado”' },
+            { value: 'basado_mercado', label: 'Basado en mercado', desc: '“priorizas lo que sabes que se vende”' }
+          ]
+        },
+        {
+          id: 'q5', emoji: '🏆', text: '¿Por qué eliges los concursos?',
+          options: [
+            { value: 'prestigio', label: 'Prestigio del concurso', desc: '“porque es reconocido o tiene buen nombre”' },
+            { value: 'costo', label: 'Costo', desc: '“porque es más accesible económicamente”' },
+            { value: 'logistica', label: 'Logística / cercanía', desc: '“porque es más fácil enviar o participar”' },
+            { value: 'costumbre', label: 'Costumbre / recomendación', desc: '“porque siempre participas ahí o te lo recomendaron”' }
+          ]
+        },
+        {
+          id: 'q6', emoji: '🏆', text: '¿Cómo eliges qué cerveza enviar?',
+          options: [
+            { value: 'mejor', label: 'La que crees mejor', desc: '“la que tú consideras de mejor calidad”' },
+            { value: 'mas_vendida', label: 'La más vendida', desc: '“la que más se vende en tu cervecería”' },
+            { value: 'ganadora', label: 'La que ya ha ganado', desc: '“una cerveza que ya tuvo buenos resultados”' },
+            { value: 'sin_criterio', label: 'No hay criterio claro', desc: '“decides caso a caso sin una estrategia fija”' }
+          ]
+        },
+        {
+          id: 'q7', emoji: '🏆', text: '¿Con qué frecuencia participas?',
+          options: [
+            { value: '1_vez', label: '1 vez al año', desc: '“participas ocasionalmente”' },
+            { value: '2_3_veces', label: '2–3 veces al año', desc: '“participación moderada”' },
+            { value: '4_o_mas', label: '4 o más veces', desc: '“participas activamente en concursos”' },
+            { value: 'no_participo', label: 'No participo', desc: '“no estás participando actualmente”' }
+          ]
+        },
+        {
+          id: 'q8', emoji: '🥇', text: '¿Las medallas te han generado ventas?',
+          options: [
+            { value: 'si_claramente', label: 'Sí, claramente', desc: '“notaste un aumento real en ventas”' },
+            { value: 'algo', label: 'Algo', desc: '“sí ayudan, pero no mucho”' },
+            { value: 'muy_poco', label: 'Muy poco', desc: '“casi no influyen”' },
+            { value: 'nada', label: 'Nada', desc: '“no generan impacto en ventas”' }
+          ]
+        },
+        {
+          id: 'q9', emoji: '🥇', text: '¿Usas las medallas en tu comunicación?',
+          options: [
+            { value: 'siempre', label: 'Siempre', desc: '“las usas activamente en redes, etiquetas o ventas”' },
+            { value: 'a_veces', label: 'A veces', desc: '“las mencionas, pero no de forma constante”' },
+            { value: 'muy_poco', label: 'Muy poco', desc: '“casi no las usas”' },
+            { value: 'nunca', label: 'Nunca', desc: '“no las utilizas en tu comunicación”' }
+          ]
+        },
+        {
+          id: 'q10', emoji: '📊', text: '¿Para ti los concursos valen la pena?',
+          options: [
+            { value: 'si_totalmente', label: 'Sí, totalmente', desc: '“crees que son una buena inversión”' },
+            { value: 'depende', label: 'Depende', desc: '“a veces sí, a veces no”' },
+            { value: 'poco', label: 'Poco', desc: '“no estás convencido de su valor”' },
+            { value: 'no', label: 'No', desc: '“no crees que valgan la pena”' }
+          ]
+        },
+        {
+          id: 'q11', emoji: '📊', text: '¿Qué te frena para participar más?',
+          options: [
+            { value: 'costo', label: 'Costo', desc: '“es caro participar”' },
+            { value: 'tiempo', label: 'Tiempo / gestión', desc: '“requiere mucho esfuerzo o coordinación”' },
+            { value: 'logistica', label: 'Logística', desc: '“es difícil enviar o participar”' },
+            { value: 'no_retorno', label: 'No veo retorno', desc: '“no ves beneficios claros”' }
+          ]
+        },
+        {
+          id: 'q12', emoji: '🧠', text: '¿Sabes tu posición en el mercado?',
+          options: [
+            { value: 'si_claramente', label: 'Sí, claramente', desc: '“tienes claro en qué nivel estás”' },
+            { value: 'mas_o_menos', label: 'Más o menos', desc: '“tienes una idea general”' },
+            { value: 'intuicion', label: 'Intuición', desc: '“lo sientes, pero no lo has medido”' },
+            { value: 'no', label: 'No', desc: '“no sabes realmente dónde estás”' }
+          ]
+        },
+        {
+          id: 'q13', emoji: '🌍', text: '¿Cómo ves el futuro del mercado?',
+          options: [
+            { value: 'muy_optimista', label: 'Muy optimista', desc: '“ves muchas oportunidades”' },
+            { value: 'moderado', label: 'Moderado', desc: '“crees que habrá crecimiento, pero con desafíos”' },
+            { value: 'preocupado', label: 'Preocupado', desc: '“ves dificultades importantes”' },
+            { value: 'pesimista', label: 'Pesimista', desc: '“crees que el escenario será complejo”' }
+          ]
+        }
       ];
 
       const container = document.getElementById('questionsContainer');
       const submitBtn = document.getElementById('submitAnswersBtn');
       const clearBtn = document.getElementById('clearAllBtn');
       const statusEl = document.getElementById('exportStatus');
+      const breweryNameInput = document.getElementById('breweryNameInput');
 
-      // ----- Renderizar preguntas -----
+      // Renderizar preguntas
       function renderQuestions() {
         let html = '';
         questionsData.forEach((q, index) => {
@@ -306,8 +469,9 @@
         container.innerHTML = html;
       }
 
-      // ----- Recolectar respuestas (objeto con pregunta y seleccionadas) -----
+      // Recolectar respuestas (incluye nombre de cervecería)
       function collectAnswers() {
+        const breweryName = breweryNameInput.value.trim() || '(sin nombre)';
         const answers = [];
         questionsData.forEach(q => {
           const checkboxes = document.querySelectorAll(`input[name="${q.id}"]:checked`);
@@ -323,42 +487,44 @@
             selectedValues: selectedValues
           });
         });
-        return answers;
+        return { breweryName, answers };
       }
 
-      // ----- Guardar respuesta en localStorage (acumulativo) -----
-      function saveResponseToStorage(answers) {
+      // Guardar respuesta en localStorage (acumulativo)
+      function saveResponseToStorage(response) {
         const stored = localStorage.getItem(STORAGE_KEY);
         let allResponses = stored ? JSON.parse(stored) : [];
         const responseRecord = {
           timestamp: new Date().toISOString(),
-          answers: answers
+          breweryName: response.breweryName,
+          answers: response.answers
         };
         allResponses.push(responseRecord);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(allResponses));
       }
 
-      // ----- Enviar respuestas (guardar y limpiar) -----
+      // Manejar envío
       function handleSubmit() {
-        const answers = collectAnswers();
-        if (answers.every(a => a.selectedLabels.length === 0)) {
+        const response = collectAnswers();
+        if (response.answers.every(a => a.selectedLabels.length === 0)) {
           statusEl.textContent = '⚠️ Por favor selecciona al menos una opción en alguna pregunta.';
           setTimeout(() => statusEl.textContent = '', 3000);
           return;
         }
-        saveResponseToStorage(answers);
+        saveResponseToStorage(response);
         clearAllSelections();
+        breweryNameInput.value = '';
         statusEl.textContent = '✅ ¡Gracias! Tus respuestas han sido registradas.';
         setTimeout(() => statusEl.textContent = '', 4000);
       }
 
-      // ----- Limpiar todas las selecciones (sin borrar storage) -----
+      // Limpiar selecciones (no borra storage)
       function clearAllSelections() {
         const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
         allCheckboxes.forEach(cb => cb.checked = false);
       }
 
-      // ----- Descargar todos los datos acumulados como CSV (solo admin) -----
+      // Descargar CSV con todos los datos (admin)
       function downloadAllDataAsCSV() {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (!stored) {
@@ -367,12 +533,12 @@
         }
         const allResponses = JSON.parse(stored);
         let csvRows = [];
-        // Cabecera: timestamp + preguntas
+        // Cabecera: Timestamp, Cervecería, luego cada pregunta
         const questionHeaders = questionsData.map(q => q.text.replace(/,/g, ';'));
-        csvRows.push(['Timestamp', ...questionHeaders].join(','));
+        csvRows.push(['Timestamp', 'Cervecería', ...questionHeaders].join(','));
 
         allResponses.forEach(record => {
-          const row = [record.timestamp];
+          const row = [record.timestamp, `"${record.breweryName.replace(/"/g, '""')}"`];
           questionsData.forEach(q => {
             const answerObj = record.answers.find(a => a.questionId === q.id);
             const answerStr = answerObj ? answerObj.selectedLabels.join('; ') : '';
@@ -393,7 +559,7 @@
         URL.revokeObjectURL(url);
       }
 
-      // ----- Mostrar panel admin si la URL tiene ?admin -----
+      // Mostrar panel admin si la URL contiene ?admin
       function checkAdminMode() {
         if (window.location.search.includes('admin')) {
           document.getElementById('adminPanel').style.display = 'block';
@@ -401,7 +567,7 @@
         }
       }
 
-      // ----- Inicializar -----
+      // Inicializar
       function init() {
         renderQuestions();
         submitBtn.addEventListener('click', handleSubmit);
