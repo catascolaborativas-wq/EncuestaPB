@@ -55,15 +55,22 @@
       max-width: 200px;
       height: auto;
     }
-    .logo-bajada {
+    /* ✅ Frase grande debajo del logo, en una sola línea */
+    .frase-destacada {
       text-align: center;
-      color: #CFDEE0;
-      font-size: 1rem;
-      font-weight: 400;
-      letter-spacing: 0.5px;
-      margin-top: -0.3rem;
-      margin-bottom: 1.5rem;
+      color: #FFFFFF;
+      font-size: clamp(1.8rem, 7vw, 2.6rem);
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      margin: 0.2rem 0 1.5rem 0;
+      white-space: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 0.5rem;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
+    .frase-destacada::-webkit-scrollbar { display: none; }
+
     /* Tarjetas glass */
     .glass-card {
       background: rgba(6,35,46,0.35);
@@ -139,7 +146,8 @@
       font-weight: 400;
       margin-top: 0.2rem;
     }
-    /* Campo de nombre de cervecería */
+
+    /* Campo nombre cervecería */
     .brewery-name-card {
       background: rgba(6,35,46,0.35);
       backdrop-filter: blur(20px);
@@ -170,13 +178,9 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .brewery-name-input:focus {
-      border-color: #f7c32f;
-    }
-    .brewery-name-input::placeholder {
-      color: #9BB7C0;
-      opacity: 0.7;
-    }
+    .brewery-name-input:focus { border-color: #f7c32f; }
+    .brewery-name-input::placeholder { color: #9BB7C0; opacity: 0.7; }
+
     .action-bar {
       display: flex;
       flex-wrap: wrap;
@@ -215,9 +219,7 @@
       height: 36px;
       transition: transform 0.2s;
     }
-    .social-icon:hover {
-      transform: scale(1.1);
-    }
+    .social-icon:hover { transform: scale(1.1); }
     .credits {
       text-align: center;
       font-size: 1rem;
@@ -249,6 +251,7 @@
       cursor: pointer;
       opacity: 0.7;
     }
+
     @media (max-width: 600px) {
       .glass-card { padding: 1.5rem 1rem; }
       .question-text { font-size: 1.2rem; }
@@ -266,11 +269,11 @@
   <div class="app-container">
     <div class="header">
       <img src="assets/Logo_Desde.png" alt="Podium Beer" class="logo-header">
-      <!-- ✅ Bajada correcta -->
-      <div class="logo-bajada">Gracias por tu tiempo. Responde desde tu mirada</div>
+      <!-- ✅ Frase corregida: grande y en una línea -->
+      <div class="frase-destacada">Gracias por tu tiempo. Responde desde tu mirada</div>
     </div>
 
-    <!-- ✅ Campo para nombre de cervecería -->
+    <!-- Campo nombre cervecería -->
     <div class="brewery-name-card">
       <div class="brewery-name-label">
         <span>🍺</span> Nombre de tu cervecería
@@ -278,7 +281,7 @@
       <input type="text" id="breweryNameInput" class="brewery-name-input" placeholder="Ej: Cerveza Artesanal del Sur" autocomplete="off">
     </div>
 
-    <!-- ✅ Contenedor de preguntas (se llena con JS) -->
+    <!-- Contenedor de preguntas (se llena con JS) -->
     <div id="questionsContainer" class="questions-list" style="display: flex; flex-direction: column; gap: 1.8rem;"></div>
 
     <div class="action-bar">
@@ -304,7 +307,7 @@
       Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015
     </div>
 
-    <!-- Panel administrador (solo visible con ?admin) -->
+    <!-- Panel admin (solo visible con ?admin) -->
     <div id="adminPanel" class="admin-download" style="display: none;">
       <button class="admin-btn" id="downloadAllDataBtn">📥 Descargar consolidado (Admin)</button>
     </div>
@@ -316,7 +319,7 @@
 
       const STORAGE_KEY = 'encuesta_respuestas';
 
-      // ✅ PREGUNTAS COMPLETAS CON TODAS LAS OPCIONES
+      // ✅ 13 preguntas completas con todas las opciones
       const questionsData = [
         {
           id: 'q1', emoji: '💸', text: '¿Cómo decides qué cerveza producir?',
@@ -443,27 +446,19 @@
       const statusEl = document.getElementById('exportStatus');
       const breweryNameInput = document.getElementById('breweryNameInput');
 
-      // Renderizar preguntas
       function renderQuestions() {
         let html = '';
         questionsData.forEach((q, index) => {
-          html += `
-            <div class="glass-card" data-qid="${q.id}">
-              <div class="section-title">${q.emoji} PREGUNTA ${index+1}</div>
-              <div class="question-text">${q.text}</div>
-              <div class="options-grid">
-          `;
+          html += `<div class="glass-card" data-qid="${q.id}">
+            <div class="section-title">${q.emoji} PREGUNTA ${index+1}</div>
+            <div class="question-text">${q.text}</div>
+            <div class="options-grid">`;
           q.options.forEach((opt, optIdx) => {
             const inputId = `${q.id}_opt${optIdx}`;
-            html += `
-                <div class="option-item">
-                  <input type="checkbox" id="${inputId}" name="${q.id}" value="${opt.value}">
-                  <label for="${inputId}" class="option-label">
-                    ${opt.label}
-                    <span class="option-desc">${opt.desc}</span>
-                  </label>
-                </div>
-            `;
+            html += `<div class="option-item">
+              <input type="checkbox" id="${inputId}" name="${q.id}" value="${opt.value}">
+              <label for="${inputId}" class="option-label">${opt.label}<span class="option-desc">${opt.desc}</span></label>
+            </div>`;
           });
           html += `</div></div>`;
         });
@@ -479,12 +474,11 @@
             const label = document.querySelector(`label[for="${cb.id}"]`);
             return label ? label.childNodes[0].nodeValue.trim() : cb.value;
           });
-          const selectedValues = Array.from(checkboxes).map(cb => cb.value);
           answers.push({
             questionId: q.id,
             questionText: q.text,
             selectedLabels: selectedLabels,
-            selectedValues: selectedValues
+            selectedValues: Array.from(checkboxes).map(cb => cb.value)
           });
         });
         return { breweryName, answers };
@@ -493,12 +487,11 @@
       function saveResponseToStorage(response) {
         const stored = localStorage.getItem(STORAGE_KEY);
         let allResponses = stored ? JSON.parse(stored) : [];
-        const responseRecord = {
+        allResponses.push({
           timestamp: new Date().toISOString(),
           breweryName: response.breweryName,
           answers: response.answers
-        };
-        allResponses.push(responseRecord);
+        });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(allResponses));
       }
 
@@ -517,40 +510,31 @@
       }
 
       function clearAllSelections() {
-        const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
-        allCheckboxes.forEach(cb => cb.checked = false);
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
       }
 
       function downloadAllDataAsCSV() {
         const stored = localStorage.getItem(STORAGE_KEY);
-        if (!stored) {
-          alert('No hay respuestas guardadas aún.');
-          return;
-        }
+        if (!stored) { alert('No hay respuestas guardadas aún.'); return; }
         const allResponses = JSON.parse(stored);
         let csvRows = [];
-        const questionHeaders = questionsData.map(q => q.text.replace(/,/g, ';'));
-        csvRows.push(['Timestamp', 'Cervecería', ...questionHeaders].join(','));
-
+        const headers = ['Timestamp', 'Cervecería', ...questionsData.map(q => q.text.replace(/,/g, ';'))];
+        csvRows.push(headers.join(','));
         allResponses.forEach(record => {
           const row = [record.timestamp, `"${record.breweryName.replace(/"/g, '""')}"`];
           questionsData.forEach(q => {
-            const answerObj = record.answers.find(a => a.questionId === q.id);
-            const answerStr = answerObj ? answerObj.selectedLabels.join('; ') : '';
-            row.push(`"${answerStr}"`);
+            const ans = record.answers.find(a => a.questionId === q.id);
+            row.push(`"${ans ? ans.selectedLabels.join('; ') : ''}"`);
           });
           csvRows.push(row.join(','));
         });
-
         const csvString = csvRows.join('\n');
         const blob = new Blob(['\uFEFF' + csvString], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `consolidado_encuesta_${new Date().toISOString().slice(0,10)}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }
 
