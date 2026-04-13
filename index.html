@@ -58,11 +58,11 @@
     .logo-bajada {
       text-align: center;
       color: #CFDEE0;
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: 400;
       letter-spacing: 0.5px;
       margin-top: -0.3rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
     /* Tarjetas glass */
     .glass-card {
@@ -266,10 +266,11 @@
   <div class="app-container">
     <div class="header">
       <img src="assets/Logo_Desde.png" alt="Podium Beer" class="logo-header">
-      <div class="logo-bajada">Catas Colaborativas · Cultura Cervecera</div>
+      <!-- ✅ Bajada correcta -->
+      <div class="logo-bajada">Gracias por tu tiempo. Responde desde tu mirada</div>
     </div>
 
-    <!-- Campo para nombre de cervecería -->
+    <!-- ✅ Campo para nombre de cervecería -->
     <div class="brewery-name-card">
       <div class="brewery-name-label">
         <span>🍺</span> Nombre de tu cervecería
@@ -277,6 +278,7 @@
       <input type="text" id="breweryNameInput" class="brewery-name-input" placeholder="Ej: Cerveza Artesanal del Sur" autocomplete="off">
     </div>
 
+    <!-- ✅ Contenedor de preguntas (se llena con JS) -->
     <div id="questionsContainer" class="questions-list" style="display: flex; flex-direction: column; gap: 1.8rem;"></div>
 
     <div class="action-bar">
@@ -298,12 +300,11 @@
       </a>
     </div>
 
-    <!-- Créditos -->
     <div class="credits">
       Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015
     </div>
 
-    <!-- Panel administrador (oculto por defecto) -->
+    <!-- Panel administrador (solo visible con ?admin) -->
     <div id="adminPanel" class="admin-download" style="display: none;">
       <button class="admin-btn" id="downloadAllDataBtn">📥 Descargar consolidado (Admin)</button>
     </div>
@@ -315,7 +316,7 @@
 
       const STORAGE_KEY = 'encuesta_respuestas';
 
-      // Preguntas completas (todas las opciones con descripción)
+      // ✅ PREGUNTAS COMPLETAS CON TODAS LAS OPCIONES
       const questionsData = [
         {
           id: 'q1', emoji: '💸', text: '¿Cómo decides qué cerveza producir?',
@@ -469,7 +470,6 @@
         container.innerHTML = html;
       }
 
-      // Recolectar respuestas (incluye nombre de cervecería)
       function collectAnswers() {
         const breweryName = breweryNameInput.value.trim() || '(sin nombre)';
         const answers = [];
@@ -490,7 +490,6 @@
         return { breweryName, answers };
       }
 
-      // Guardar respuesta en localStorage (acumulativo)
       function saveResponseToStorage(response) {
         const stored = localStorage.getItem(STORAGE_KEY);
         let allResponses = stored ? JSON.parse(stored) : [];
@@ -503,7 +502,6 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(allResponses));
       }
 
-      // Manejar envío
       function handleSubmit() {
         const response = collectAnswers();
         if (response.answers.every(a => a.selectedLabels.length === 0)) {
@@ -518,13 +516,11 @@
         setTimeout(() => statusEl.textContent = '', 4000);
       }
 
-      // Limpiar selecciones (no borra storage)
       function clearAllSelections() {
         const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
         allCheckboxes.forEach(cb => cb.checked = false);
       }
 
-      // Descargar CSV con todos los datos (admin)
       function downloadAllDataAsCSV() {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (!stored) {
@@ -533,7 +529,6 @@
         }
         const allResponses = JSON.parse(stored);
         let csvRows = [];
-        // Cabecera: Timestamp, Cervecería, luego cada pregunta
         const questionHeaders = questionsData.map(q => q.text.replace(/,/g, ';'));
         csvRows.push(['Timestamp', 'Cervecería', ...questionHeaders].join(','));
 
@@ -559,7 +554,6 @@
         URL.revokeObjectURL(url);
       }
 
-      // Mostrar panel admin si la URL contiene ?admin
       function checkAdminMode() {
         if (window.location.search.includes('admin')) {
           document.getElementById('adminPanel').style.display = 'block';
@@ -567,7 +561,6 @@
         }
       }
 
-      // Inicializar
       function init() {
         renderQuestions();
         submitBtn.addEventListener('click', handleSubmit);
