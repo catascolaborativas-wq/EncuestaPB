@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-  <title>Diagnóstico Cervecero · Podium Beer</title>
+  <title>Encuesta · Podium Beer</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <style>
-    /* ===== ESTILOS (sin cambios) ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: 'Inter', sans-serif;
@@ -56,31 +55,7 @@
       max-width: 200px;
       height: auto;
     }
-    h1 {
-      font-size: clamp(28px, 8vw, 44px);
-      font-weight: 800;
-      color: #FFFFFF;
-      letter-spacing: -0.5px;
-      text-align: center;
-    }
-    .subhead {
-      font-size: clamp(18px, 5vw, 24px);
-      font-weight: 500;
-      color: #CFDEE0;
-      text-align: center;
-      margin-top: 0.25rem;
-    }
-    .description {
-      background: rgba(6,35,46,0.7);
-      backdrop-filter: blur(4px);
-      padding: 1rem 1.5rem;
-      border-radius: 40px;
-      color: #fff;
-      text-align: center;
-      font-weight: 500;
-      border: 1px solid rgba(255,255,255,0.15);
-      line-height: 1.4;
-    }
+    /* Tarjetas glass */
     .glass-card {
       background: rgba(6,35,46,0.35);
       backdrop-filter: blur(20px);
@@ -213,13 +188,8 @@
 
   <div class="app-container">
     <div class="header">
-      <!-- ✅ LOGO CORREGIDO: usa Logo_Desde.png -->
+      <!-- Logo corregido: Logo_Desde.png -->
       <img src="assets/Logo_Desde.png" alt="Podium Beer" class="logo-header">
-      <h1>Diagnóstico Estratégico</h1>
-      <div class="subhead">Conocé el perfil real de tu cervecería</div>
-      <div class="description">
-        Seleccioná todas las opciones que reflejen tu situación actual. Al final podrás descargar tus respuestas en CSV.
-      </div>
     </div>
 
     <div id="questionsContainer" class="questions-list" style="display: flex; flex-direction: column; gap: 1.8rem;"></div>
