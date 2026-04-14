@@ -6,8 +6,15 @@
   <title>Encuesta · Podium Beer</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background: #000;
@@ -17,28 +24,41 @@
       justify-content: center;
       padding: 1.5rem 0.5rem;
     }
+
     .hero-bg {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       z-index: -2;
       background-image: url('assets/bg_cerveceria.jpg');
       background-size: cover;
       background-position: center;
     }
+
     .overlay-color {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: #06232E;
       opacity: 0.57;
       z-index: -1;
     }
+
     .vignette {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       box-shadow: inset 0 0 80px rgba(0,0,0,0.5);
       pointer-events: none;
       z-index: 0;
     }
+
     .app-container {
       width: 90%;
       max-width: 900px;
@@ -49,6 +69,7 @@
       flex-direction: column;
       gap: 2rem;
     }
+
     .logo-header {
       display: block;
       margin: 0 auto 0.5rem auto;
@@ -56,6 +77,7 @@
       max-width: 200px;
       height: auto;
     }
+
     .frase-destacada {
       text-align: center;
       color: #FFFFFF;
@@ -65,11 +87,15 @@
       margin: 0.2rem 0 1.5rem 0;
       white-space: nowrap;
       overflow-x: auto;
+      overflow-y: hidden;
       -webkit-overflow-scrolling: touch;
       padding: 0 0.2rem;
       text-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
-    .frase-destacada::-webkit-scrollbar { display: none; }
+
+    .frase-destacada::-webkit-scrollbar {
+      display: none;
+    }
 
     .glass-card {
       background: rgba(6,35,46,0.35);
@@ -81,6 +107,7 @@
       transition: transform 0.2s ease;
       position: relative;
     }
+
     .section-title {
       font-size: 1rem;
       font-weight: 700;
@@ -89,6 +116,7 @@
       text-transform: uppercase;
       margin-bottom: 0.25rem;
     }
+
     .question-text {
       font-size: 1.4rem;
       font-weight: 700;
@@ -98,17 +126,20 @@
       border-left: 5px solid #e32c6c;
       padding-left: 1rem;
     }
+
     .options-grid {
       display: flex;
       flex-direction: column;
       gap: 0.9rem;
       margin-bottom: 0.5rem;
     }
+
     .option-item {
       display: flex;
       align-items: flex-start;
       gap: 0.75rem;
     }
+
     .option-item input[type="checkbox"] {
       width: 22px;
       height: 22px;
@@ -117,12 +148,14 @@
       margin-top: 2px;
       cursor: pointer;
     }
+
     .option-label {
       color: #FFFFFF;
       font-size: 1rem;
       line-height: 1.4;
       font-weight: 500;
     }
+
     .option-desc {
       display: block;
       font-size: 0.8rem;
@@ -140,6 +173,7 @@
       padding: 1.5rem;
       margin-bottom: 0.5rem;
     }
+
     .brewery-name-label {
       font-size: 1.2rem;
       font-weight: 600;
@@ -149,6 +183,7 @@
       align-items: center;
       gap: 0.5rem;
     }
+
     .brewery-name-input {
       width: 100%;
       padding: 0.9rem 1.2rem;
@@ -161,8 +196,15 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .brewery-name-input:focus { border-color: #f7c32f; }
-    .brewery-name-input::placeholder { color: #9BB7C0; opacity: 0.7; }
+
+    .brewery-name-input:focus {
+      border-color: #f7c32f;
+    }
+
+    .brewery-name-input::placeholder {
+      color: #9BB7C0;
+      opacity: 0.7;
+    }
 
     .action-bar {
       display: flex;
@@ -171,6 +213,7 @@
       gap: 1rem;
       margin-top: 0.5rem;
     }
+
     .btn {
       background: linear-gradient(90deg, #E40F63, #C32263);
       border: none;
@@ -185,30 +228,42 @@
       border: 1px solid rgba(255,255,255,0.2);
       min-width: 200px;
     }
-    .btn:active { transform: scale(0.97); filter: brightness(0.92); }
+
+    .btn:active {
+      transform: scale(0.97);
+      filter: brightness(0.92);
+    }
+
     .btn:disabled {
       opacity: 0.65;
       cursor: not-allowed;
-      transform: none;
-      filter: none;
     }
+
     .btn-secondary {
       background: rgba(0,0,0,0.6);
       box-shadow: none;
       border: 1px solid rgba(255,255,255,0.3);
     }
+
     .social-bar {
       display: flex;
       justify-content: center;
       gap: 1.5rem;
       margin: 1rem 0 0.5rem;
     }
+
     .social-icon {
       width: 36px;
       height: 36px;
       transition: transform 0.2s;
+      object-fit: contain;
+      display: block;
     }
-    .social-icon:hover { transform: scale(1.1); }
+
+    .social-icon:hover {
+      transform: scale(1.1);
+    }
+
     .credits {
       text-align: center;
       font-size: 1rem;
@@ -220,12 +275,14 @@
       backdrop-filter: blur(4px);
       margin-top: 1rem;
     }
+
     .status-message {
       color: #f7c32f;
       text-align: center;
       min-height: 1.8rem;
       font-weight: 500;
     }
+
     .data-note {
       text-align: center;
       color: #CFDEE0;
@@ -235,14 +292,33 @@
     }
 
     @media (max-width: 600px) {
-      .glass-card { padding: 1.5rem 1rem; }
-      .question-text { font-size: 1.2rem; }
-      .btn { padding: 10px 18px; min-width: 160px; }
-      .social-icon { width: 30px; height: 30px; }
-      .brewery-name-label { font-size: 1rem; }
+      .glass-card {
+        padding: 1.5rem 1rem;
+      }
+
+      .question-text {
+        font-size: 1.2rem;
+      }
+
+      .btn {
+        padding: 10px 18px;
+        min-width: 160px;
+      }
+
+      .social-icon {
+        width: 30px;
+        height: 30px;
+      }
+
+      .brewery-name-label {
+        font-size: 1rem;
+      }
     }
+
     @media (max-width: 400px) {
-      .frase-destacada { font-size: 5.5vw; }
+      .frase-destacada {
+        font-size: 5.5vw;
+      }
     }
   </style>
 </head>
@@ -282,13 +358,13 @@
 
     <div class="social-bar">
       <a href="https://www.instagram.com/catascolaborativascl/" target="_blank" rel="noopener">
-        <img src="assets/icon_instagram.png" alt="Instagram" class="social-icon">
+        <img src="icon_instagram.png" alt="Instagram" class="social-icon">
       </a>
       <a href="https://catascolaborativas.cl/" target="_blank" rel="noopener">
-        <img src="assets/icon_web.png" alt="Sitio Web" class="social-icon">
+        <img src="icon_web.png" alt="Sitio Web" class="social-icon">
       </a>
       <a href="https://wa.me/56952184980" target="_blank" rel="noopener">
-        <img src="assets/icon_wpp.png" alt="WhatsApp" class="social-icon">
+        <img src="icon_wpp.png" alt="WhatsApp" class="social-icon">
       </a>
     </div>
 
@@ -436,7 +512,7 @@
 
           if (error) {
             console.error('Supabase error:', error);
-            statusEl.textContent = '❌ No se pudieron guardar las respuestas. Revisa la tabla o permisos en Supabase.';
+            statusEl.textContent = `❌ Error al guardar: ${error.message || 'revisa permisos o tabla en Supabase.'}`;
             return;
           }
 
