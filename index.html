@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
   <title>Encuesta · Podium Beer</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
@@ -55,7 +56,6 @@
       max-width: 200px;
       height: auto;
     }
-    /* Frase ajustada para una línea en móviles */
     .frase-destacada {
       text-align: center;
       color: #FFFFFF;
@@ -71,7 +71,6 @@
     }
     .frase-destacada::-webkit-scrollbar { display: none; }
 
-    /* Tarjetas glass */
     .glass-card {
       background: rgba(6,35,46,0.35);
       backdrop-filter: blur(20px);
@@ -132,7 +131,6 @@
       margin-top: 0.2rem;
     }
 
-    /* Campo nombre cervecería */
     .brewery-name-card {
       background: rgba(6,35,46,0.35);
       backdrop-filter: blur(20px);
@@ -180,7 +178,7 @@
       padding: 12px 28px;
       cursor: pointer;
       box-shadow: 0 4px 16px rgba(228,15,99,0.5);
-      transition: transform 0.1s ease, filter 0.1s ease;
+      transition: transform 0.1s ease, filter 0.1s ease, opacity 0.2s ease;
       font-weight: 700;
       font-size: 1rem;
       color: #FFFFFF;
@@ -188,6 +186,12 @@
       min-width: 200px;
     }
     .btn:active { transform: scale(0.97); filter: brightness(0.92); }
+    .btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+      filter: none;
+    }
     .btn-secondary {
       background: rgba(0,0,0,0.6);
       box-shadow: none;
@@ -222,19 +226,12 @@
       min-height: 1.8rem;
       font-weight: 500;
     }
-    .admin-download {
+    .data-note {
       text-align: center;
-      margin-top: 0.5rem;
-    }
-    .admin-btn {
-      background: transparent;
-      border: 1px dashed #f7c32f;
-      color: #f7c32f;
-      padding: 6px 12px;
-      border-radius: 30px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      opacity: 0.7;
+      color: #CFDEE0;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      margin-top: -1rem;
     }
 
     @media (max-width: 600px) {
@@ -244,11 +241,8 @@
       .social-icon { width: 30px; height: 30px; }
       .brewery-name-label { font-size: 1rem; }
     }
-    /* Ajuste extra para pantallas muy pequeñas */
     @media (max-width: 400px) {
-      .frase-destacada {
-        font-size: 5.5vw;
-      }
+      .frase-destacada { font-size: 5.5vw; }
     }
   </style>
 </head>
@@ -267,7 +261,13 @@
       <div class="brewery-name-label">
         <span>🍺</span> Nombre de tu cervecería
       </div>
-      <input type="text" id="breweryNameInput" class="brewery-name-input" placeholder="Ej: Cerveza Artesanal del Sur" autocomplete="off">
+      <input
+        type="text"
+        id="breweryNameInput"
+        class="brewery-name-input"
+        placeholder="Ej: Cerveza Artesanal del Sur"
+        autocomplete="off"
+      >
     </div>
 
     <div id="questionsContainer" class="questions-list" style="display: flex; flex-direction: column; gap: 1.8rem;"></div>
@@ -276,7 +276,9 @@
       <button class="btn" id="submitAnswersBtn">📤 Enviar respuestas</button>
       <button class="btn btn-secondary" id="clearAllBtn">🧹 Limpiar selecciones</button>
     </div>
+
     <div id="exportStatus" class="status-message"></div>
+    <div class="data-note">Tus respuestas serán consolidadas para análisis interno de Catas Colaborativas.</div>
 
     <div class="social-bar">
       <a href="https://www.instagram.com/catascolaborativascl/" target="_blank" rel="noopener">
@@ -293,20 +295,20 @@
     <div class="credits">
       Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015
     </div>
-
-    <!-- Panel administrador (se muestra con ?admin) -->
-    <div id="adminPanel" class="admin-download" style="display: none;">
-      <button class="admin-btn" id="downloadAllDataBtn">📥 Descargar consolidado (Admin)</button>
-    </div>
   </div>
 
   <script>
-    (function(){
+    (function () {
       "use strict";
 
-      const STORAGE_KEY = 'encuesta_respuestas';
+      const SUPABASE_URL = "https://rkdenrhhexfxhtnouxqq.supabase.co";
+      const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Gyt2ewxRw8TtGCYmcOX3gQ_Nv3Adf4P";
 
-      // 13 preguntas completas (con descripciones originales)
+      const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
       const questionsData = [
         { id: 'q1', emoji: '💸', text: '¿Cómo decides qué cerveza producir?', options: [ { value: 'intuicion', label: 'Intuición / experiencia', desc: '“lo que tú crees que puede funcionar”' }, { value: 'tendencias', label: 'Tendencias de mercado', desc: '“lo que ves que está de moda o se está haciendo más”' }, { value: 'feedback', label: 'Feedback de clientes', desc: '“lo que te piden o te comentan tus clientes”' }, { value: 'datos_ventas', label: 'Datos de ventas', desc: '“lo que sabes que ya se vende bien en tu cervecería”' } ] },
         { id: 'q2', emoji: '💸', text: '¿Qué pesa más al tomar decisiones?', options: [ { value: 'margen', label: 'Margen', desc: '“ganar más plata por cada cerveza”' }, { value: 'rotacion', label: 'Rotación', desc: '“vender más volumen aunque ganes menos por unidad”' }, { value: 'balance', label: 'Balance de ambos', desc: '“buscar equilibrio entre margen y volumen”' }, { value: 'no_claro', label: 'No lo tengo claro', desc: '“no lo tengo definido o depende del momento”' } ] },
@@ -331,100 +333,123 @@
 
       function renderQuestions() {
         let html = '';
+
         questionsData.forEach((q, index) => {
-          html += `<div class="glass-card" data-qid="${q.id}">
-            <div class="section-title">${q.emoji} PREGUNTA ${index+1}</div>
-            <div class="question-text">${q.text}</div>
-            <div class="options-grid">`;
+          html += `
+            <div class="glass-card" data-qid="${q.id}">
+              <div class="section-title">${q.emoji} PREGUNTA ${index + 1}</div>
+              <div class="question-text">${q.text}</div>
+              <div class="options-grid">
+          `;
+
           q.options.forEach((opt, optIdx) => {
             const inputId = `${q.id}_opt${optIdx}`;
-            html += `<div class="option-item">
-              <input type="checkbox" id="${inputId}" name="${q.id}" value="${opt.value}">
-              <label for="${inputId}" class="option-label">${opt.label}<span class="option-desc">${opt.desc}</span></label>
-            </div>`;
+            html += `
+              <div class="option-item">
+                <input type="checkbox" id="${inputId}" name="${q.id}" value="${opt.value}">
+                <label for="${inputId}" class="option-label">
+                  ${opt.label}
+                  <span class="option-desc">${opt.desc}</span>
+                </label>
+              </div>
+            `;
           });
-          html += `</div></div>`;
+
+          html += `
+              </div>
+            </div>
+          `;
         });
+
         container.innerHTML = html;
       }
 
       function collectAnswers() {
         const breweryName = breweryInput.value.trim() || '(sin nombre)';
-        const answers = [];
-        questionsData.forEach(q => {
+
+        const answers = questionsData.map((q) => {
           const checkboxes = document.querySelectorAll(`input[name="${q.id}"]:checked`);
+          const selectedValues = Array.from(checkboxes).map(cb => cb.value);
+
           const selectedLabels = Array.from(checkboxes).map(cb => {
             const label = document.querySelector(`label[for="${cb.id}"]`);
-            return label ? label.childNodes[0].nodeValue.trim() : cb.value;
+            if (!label) return cb.value;
+
+            const directText = Array.from(label.childNodes)
+              .find(node => node.nodeType === Node.TEXT_NODE);
+
+            return directText ? directText.nodeValue.trim() : cb.value;
           });
-          answers.push({
+
+          return {
             questionId: q.id,
             questionText: q.text,
-            selectedLabels: selectedLabels,
-            selectedValues: Array.from(checkboxes).map(cb => cb.value)
-          });
+            selectedLabels,
+            selectedValues
+          };
         });
+
         return { breweryName, answers };
       }
 
-      function saveResponseToStorage(response) {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        let allResponses = stored ? JSON.parse(stored) : [];
-        allResponses.push({
-          timestamp: new Date().toISOString(),
-          breweryName: response.breweryName,
-          answers: response.answers
+      function clearAllSelections() {
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+          cb.checked = false;
         });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(allResponses));
       }
 
-      function handleSubmit() {
+      async function handleSubmit() {
         const response = collectAnswers();
-        if (response.answers.every(a => a.selectedLabels.length === 0)) {
+        const hasAnyAnswer = response.answers.some(a => a.selectedValues.length > 0);
+
+        if (!hasAnyAnswer) {
           statusEl.textContent = '⚠️ Por favor selecciona al menos una opción en alguna pregunta.';
-          setTimeout(() => statusEl.textContent = '', 3000);
+          setTimeout(() => { statusEl.textContent = ''; }, 3000);
           return;
         }
-        saveResponseToStorage(response);
-        clearAllSelections();
-        breweryInput.value = '';
-        statusEl.textContent = '✅ ¡Gracias! Tus respuestas han sido registradas.';
-        setTimeout(() => statusEl.textContent = '', 4000);
-      }
 
-      function clearAllSelections() {
-        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-      }
+        submitBtn.disabled = true;
+        clearBtn.disabled = true;
+        statusEl.textContent = '⏳ Guardando respuestas...';
 
-      function downloadAllDataAsCSV() {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (!stored) { alert('No hay respuestas guardadas aún.'); return; }
-        const allResponses = JSON.parse(stored);
-        let csvRows = [];
-        const headers = ['Timestamp', 'Cervecería', ...questionsData.map(q => q.text.replace(/,/g, ';'))];
-        csvRows.push(headers.join(','));
-        allResponses.forEach(record => {
-          const row = [record.timestamp, `"${record.breweryName.replace(/"/g, '""')}"`];
-          questionsData.forEach(q => {
-            const ans = record.answers.find(a => a.questionId === q.id);
-            row.push(`"${ans ? ans.selectedLabels.join('; ') : ''}"`);
-          });
-          csvRows.push(row.join(','));
-        });
-        const csvString = csvRows.join('\n');
-        const blob = new Blob(['\uFEFF' + csvString], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `consolidado_encuesta_${new Date().toISOString().slice(0,10)}.csv`;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
+        const payload = {
+          brewery_name: response.breweryName,
+          q1: response.answers.find(a => a.questionId === 'q1')?.selectedValues || [],
+          q2: response.answers.find(a => a.questionId === 'q2')?.selectedValues || [],
+          q3: response.answers.find(a => a.questionId === 'q3')?.selectedValues || [],
+          q4: response.answers.find(a => a.questionId === 'q4')?.selectedValues || [],
+          q5: response.answers.find(a => a.questionId === 'q5')?.selectedValues || [],
+          q6: response.answers.find(a => a.questionId === 'q6')?.selectedValues || [],
+          q7: response.answers.find(a => a.questionId === 'q7')?.selectedValues || [],
+          q8: response.answers.find(a => a.questionId === 'q8')?.selectedValues || [],
+          q9: response.answers.find(a => a.questionId === 'q9')?.selectedValues || [],
+          q10: response.answers.find(a => a.questionId === 'q10')?.selectedValues || [],
+          q11: response.answers.find(a => a.questionId === 'q11')?.selectedValues || [],
+          q12: response.answers.find(a => a.questionId === 'q12')?.selectedValues || [],
+          q13: response.answers.find(a => a.questionId === 'q13')?.selectedValues || []
+        };
 
-      function checkAdminMode() {
-        if (window.location.search.includes('admin')) {
-          document.getElementById('adminPanel').style.display = 'block';
-          document.getElementById('downloadAllDataBtn').addEventListener('click', downloadAllDataAsCSV);
+        try {
+          const { error } = await supabaseClient
+            .from('respuestas_encuesta')
+            .insert([payload]);
+
+          if (error) {
+            console.error('Supabase error:', error);
+            statusEl.textContent = '❌ No se pudieron guardar las respuestas. Revisa la tabla o permisos en Supabase.';
+            return;
+          }
+
+          clearAllSelections();
+          breweryInput.value = '';
+          statusEl.textContent = '✅ ¡Gracias! Tus respuestas fueron registradas.';
+          setTimeout(() => { statusEl.textContent = ''; }, 4000);
+        } catch (err) {
+          console.error('Unexpected error:', err);
+          statusEl.textContent = '❌ Ocurrió un error inesperado al guardar.';
+        } finally {
+          submitBtn.disabled = false;
+          clearBtn.disabled = false;
         }
       }
 
@@ -432,7 +457,6 @@
         renderQuestions();
         submitBtn.addEventListener('click', handleSubmit);
         clearBtn.addEventListener('click', clearAllSelections);
-        checkAdminMode();
       }
 
       init();
